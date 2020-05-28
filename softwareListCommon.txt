@@ -1,0 +1,13 @@
+Adobe.AdobeAcrobatReaderDC
+Git.Git
+GitHub.GitHubDesktop
+KeePassXCTeam.KeePassXC
+Microsoft.AzureCLI
+Microsoft.AzureStorageExplorer
+Microsoft.Edge
+Microsoft.PowerToys
+Microsoft.VisualStudioCode
+Microsoft.WindowsTerminal
+SlackTechnologies.Slack
+WinSCP.WinSCP
+Docker.DockerDesktop

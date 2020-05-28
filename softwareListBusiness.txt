@@ -1,0 +1,2 @@
+Microsoft.SQLServerManagementStudio
+Microsoft.VisualStudio.Enterprise
