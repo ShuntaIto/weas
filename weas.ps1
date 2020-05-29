@@ -103,7 +103,19 @@ cSwitch "WSL2" "Do you want to install WSL2? (require restart)" `
 }
 else{
     wsl --set-default-version 2 
-}  
+} 
+
+# do not hide extension
+
+cSwitch "Hiding Extension" "Do you want not to hide registerd extension?" `
+@(
+    cCase "&Yes" "Yes" {
+        Set-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -name "HideFileExt" -Value 0
+    }
+    cCase "&No"  "No" {
+        "keep hide extension"
+    }
+)
 
 ## Install software
 
