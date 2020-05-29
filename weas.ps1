@@ -101,10 +101,22 @@ cSwitch "WSL2" "Do you want to install WSL2? (require restart)" `
     }
 )
 }
-else{
-    wsl --set-default-version 2 
+elseif ($restartFlag -eq 1){
+    $downloadPath = (Get-Location).Path + "\wsl2_kernel.msi"
+    Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" -OutFile $downloadPath
+    Invoke-CimMethod -ClassName Win32_Product -MethodName Install -Arguments @{PackageLocation = $downloadPath }
+    $scriptPath = (Get-Location).Path + "\weas.ps1"
+    registerRunOnceScriptAfterLogin $scriptPath
+    Write-Output '$restartFlag=2' | Set-Content -Encoding Default config.ini
+    Restart-Computer -Force
+    Read-Host "Waiting Restart……" 
 } 
-
+elseif ($restartFlag -eq 2){
+    wsl --set-default-version 2 
+}
+else{
+    "Something wrong..."
+}
 # do not hide extension
 
 cSwitch "Hiding Extension" "Do you want not to hide registerd extension?" `
@@ -132,7 +144,6 @@ cSwitch "Environment Type" "Private or Business?" `
         $softwareList = $softwareList + $softwareListBusiness
     }
 )
-
 
 for ($i=0; $i -lt $softwareList.Count; $i++){
     winget install -e $softwareList[$i]
