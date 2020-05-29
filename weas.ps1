@@ -110,10 +110,10 @@ cSwitch "WSL2" "Do you want to install WSL2? (require restart)" `
 )
 }
 elseif ($restartFlag -eq 1){
-    $downloadPath = (Get-Location).Path + "\wsl2_kernel.msi"
+    $downloadPath = $path + "\wsl2_kernel.msi"
     Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" -OutFile $downloadPath
     Invoke-CimMethod -ClassName Win32_Product -MethodName Install -Arguments @{PackageLocation = $downloadPath }
-    $scriptPath = (Get-Location).Path + "\weas.ps1"
+    $scriptPath = $path + "\weas.ps1"
     registerRunOnceScriptAfterLogin $scriptPath
     Write-Output '$restartFlag=2' | Set-Content -Encoding Default $configPath
     Restart-Computer -Force
