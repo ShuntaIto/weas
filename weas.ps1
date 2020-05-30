@@ -1,3 +1,11 @@
+if($null -eq $args[0]){
+    $path = (Get-Location).Path
+}
+else{
+    $path = $args[0]
+}
+$configPath = $path + "\config.ini"
+
 ## Need Set-ExecutionPolicy RemoteSigned and admin
 
 filter Invoke-Choice
@@ -77,11 +85,11 @@ function registerRunOnceScriptAfterLogin() {
     $powerShell = (Join-Path $env:windir "system32\WindowsPowerShell\v1.0\powershell.exe")
     $restartKey = "Restart-And-RunOnce"
 
-    Set-ItemProperty -path $regRunOnceKey -name $restartKey -value "$powerShell $script"
+    Set-ItemProperty -path $regRunOnceKey -name $restartKey -value "$powerShell $script $path"
 }
 
 ## Load status
-Get-Content "config.ini" | where-object {$_ -notmatch '^\s*$'} | where-object {!($_.TrimStart().StartsWith("#"))}| Invoke-Expression
+Get-Content $configPath | where-object { $_ -notmatch '^\s*$' } | where-object { !($_.TrimStart().StartsWith("#")) } | Invoke-Expression
 ## http://tooljp.com/language/powershell/html/Sample-code-for-reading-and-setting-variables-from-ini-file.html
 
 if($restartFlag -eq 0){
@@ -90,9 +98,9 @@ cSwitch "WSL2" "Do you want to install WSL2? (require restart)" `
     cCase "&Yes" "Yes" {
         dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
         dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-        $scriptPath = (Get-Location).Path + "\weas.ps1"
+        $scriptPath = $path + "\weas.ps1"
         registerRunOnceScriptAfterLogin $scriptPath
-        Write-Output '$restartFlag=1' | Set-Content -Encoding Default config.ini
+        Write-Output '$restartFlag=1' | Set-Content -Encoding Default $configPath
         Restart-Computer -Force
         Read-Host "Waiting Restart……" 
     }
@@ -101,9 +109,22 @@ cSwitch "WSL2" "Do you want to install WSL2? (require restart)" `
     }
 )
 }
-else{
-    wsl --set-default-version 2 
+elseif ($restartFlag -eq 1){
+    $downloadPath = $path + "\wsl2_kernel.msi"
+    Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" -OutFile $downloadPath
+    Invoke-CimMethod -ClassName Win32_Product -MethodName Install -Arguments @{PackageLocation = $downloadPath }
+    $scriptPath = $path + "\weas.ps1"
+    registerRunOnceScriptAfterLogin $scriptPath
+    Write-Output '$restartFlag=2' | Set-Content -Encoding Default $configPath
+    Restart-Computer -Force
+    Read-Host "Waiting Restart……" 
 } 
+elseif ($restartFlag -eq 2){
+    wsl --set-default-version 2 
+}
+else{
+    "Something wrong..."
+}
 
 # do not hide extension
 
@@ -119,20 +140,24 @@ cSwitch "Hiding Extension" "Do you want not to hide registerd extension?" `
 
 ## Install software
 
-$softwareList = (Get-Content softwareListCommon.txt) -as [string[]]
+$softwareListCommonPath = $path + "\softwareListCommon.txt"
+$softwareListPrivatePath = $path + "\softwareListPrivate.txt"
+$softwareListBusinessPath = $path + "\softwareListBusiness.txt"
+
+
+$softwareList = (Get-Content $softwareListCommonPath) -as [string[]]
 
 cSwitch "Environment Type" "Private or Business?" `
 @(
     cCase "&Private" "Private" {
-        $softwareListPrivate = (Get-Content softwareListPrivate.txt) -as [string[]]
+        $softwareListPrivate = (Get-Content $softwareListPrivatePath) -as [string[]]
         $softwareList = $softwareList + $softwareListPrivate
     }
     cCase "&Business"  "Business" {
-        $softwareListBusiness = (Get-Content softwareListBusiness.txt) -as [string[]]
+        $softwareListBusiness = (Get-Content $softwareListBusinessPath) -as [string[]]
         $softwareList = $softwareList + $softwareListBusiness
     }
 )
-
 
 for ($i=0; $i -lt $softwareList.Count; $i++){
     winget install -e $softwareList[$i]
