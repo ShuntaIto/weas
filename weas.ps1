@@ -1,3 +1,12 @@
+if(([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+            [Security.Principal.WindowsBuiltInRole] "Administrator")){
+    "Starting automation process..."
+}
+else{
+    Read-Host "You must have Administrator privileges to excute this script" 
+    exit
+}
+
 if($null -eq $args[0]){
     $path = (Get-Location).Path
 }
