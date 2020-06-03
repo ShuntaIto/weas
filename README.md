@@ -10,7 +10,7 @@ WEAS(Windows Environment Auto-Setup) is a powershell script to automate initial 
 
 ## Preparing
 
-First, install winget-cli from https://github.com/microsoft/winget-cli
+First, install winget-cli from https://github.com/microsoft/winget-cli .
 
 Second, change ExcutionPolicy on Powershell(Admin).
 
@@ -18,11 +18,11 @@ Second, change ExcutionPolicy on Powershell(Admin).
 Set-ExecutionPolicy RemoteSigned
 ```
 
-## Check your software list
+## Check and update your software list
 
-Edit softwareList*.txt for your environment.
+You can edit softwareList*.txt for your environment.
 
-You can see available software list.
+You can see available software list with following command.
 ```
 winget search
 ```
