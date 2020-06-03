@@ -1,3 +1,2 @@
-Microsoft.SQLServerManagementStudio
-Microsoft.VisualStudio.Enterprise
-AdoptOpenJDK.OpenJDK
+SlackTechnologies.Slack
+Zoom.Zoom
