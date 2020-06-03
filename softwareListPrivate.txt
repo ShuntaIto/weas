@@ -1,11 +1,2 @@
-evernote.evernote
-Ytmdesktop.Ytmdesktop
 Apple.iTunes
-Zoom.Zoom
-Valve.Steam
-Twilio.Authy
-Videolan.Vlc
-Amazon.AWSCLI
-Amazon.Kindle
 Google.Chrome
-OpenVPNTechnologies.OpenVPN
